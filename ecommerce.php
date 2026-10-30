@@ -50,20 +50,6 @@ if ($is_logged_in) {
     } catch (PDOException $e) {}
 }
 
-// Quick add to cart AJAX
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'quick_add') {
-    verify_csrf_token();
-    header('Content-Type: application/json');
-    if (!$is_logged_in) { echo json_encode(['ok'=>false,'error'=>'login_required']); exit; }
-    $pid = (int)($_POST['product_id'] ?? 0);
-    $qty = max(1, (int)($_POST['quantity'] ?? 1));
-    try {
-        $pdo->prepare("INSERT INTO Cart_Items (user_id, product_id, quantity) VALUES (?, ?, ?)")->execute([$user_id, $pid, $qty]);
-        echo json_encode(['ok'=>true,'cart_count'=>$cart_count+$qty]);
-    } catch (Exception $e) { echo json_encode(['ok'=>false,'error'=>$e->getMessage()]); }
-    exit;
-}
-
 $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoes'=>'footprint','Jersey'=>'checkroom','Apparel'=>'checkroom','Bags'=>'backpack','Accessories'=>'diamond','Other'=>'inventory_2'];
 ?>
 <!DOCTYPE html>
@@ -72,12 +58,19 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Shop | HI-POWER</title>
+    <!-- Google Fonts Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <?php include __DIR__ . '/includes/tailwind_config.php'; ?>
     <style>
+        body, button, input, select {
+            font-family: 'Poppins', sans-serif !important;
+        }
         .shop-body {
             margin: 0;
-            background: linear-gradient(120deg, #f9fbfe, #eef5fc);
-            color: #10243a;
+            background: #F4F6F8;
+            color: #14264A;
         }
         .shop-page {
             max-width: 1500px;
@@ -86,17 +79,18 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
         }
         .shop-hero {
             min-height: 300px;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             display: flex;
             align-items: center;
             padding: 40px;
-            background: linear-gradient(90deg, #061823 0%, #061823e8 35%, #06182320 100%),
+            background: linear-gradient(90deg, #080F17 0%, #080F17e8 40%, #080F1720 100%),
                         url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1800&q=85') center 48% / cover;
             color: #fff;
+            box-shadow: 0 10px 30px rgba(8,15,23,0.1);
         }
         .shop-eyebrow {
-            color: #ff521c;
+            color: #FF5722;
             font-size: 12px;
             font-weight: 800;
             letter-spacing: 1.8px;
@@ -104,22 +98,25 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
         }
         .shop-hero h1 {
             font-size: clamp(32px, 4vw, 48px);
-            line-height: 1.08;
+            line-height: 1.1;
             margin: 10px 0;
             color: #fff;
+            font-weight: 800;
         }
-        .shop-hero h1 span { color: #ff521c; }
+        .shop-hero h1 span { color: #FF5722; }
         .shop-hero p {
-            color: #e0eaf3;
+            color: #94A3B8;
             max-width: 420px;
             line-height: 1.6;
             margin: 0;
+            font-size: 14px;
         }
-        .shop-sectionhead { margin: 26px 4px 16px; }
+        .shop-sectionhead { margin: 32px 4px 16px; }
         .shop-sectionhead h2 {
-            font-size: 28px;
+            font-size: 26px;
+            font-weight: 700;
             margin: 3px 0;
-            color: #10243a;
+            color: #14264A;
         }
         .shop-categories {
             display: grid;
@@ -127,16 +124,16 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             gap: 12px;
         }
         .shop-category {
-            background: #ffffffc9;
-            border: 1px solid #dfe8f3;
-            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
             min-height: 95px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            color: #10243a;
+            color: #14264A;
             font-weight: 700;
             font-size: 13px;
             cursor: pointer;
@@ -144,10 +141,11 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             text-decoration: none;
             text-align: center;
             padding: 10px 6px;
+            box-shadow: 0 2px 8px rgba(8,15,23,0.02);
         }
         .shop-category .material-symbols-outlined {
             font-size: 27px;
-            color: #7386a0;
+            color: #64748B;
             transition: color .2s ease;
         }
         .shop-cat-icon {
@@ -155,19 +153,19 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #7386a0;
+            color: #64748B;
             transition: color .2s ease;
         }
         .shop-category.active,
         .shop-category:hover {
-            border-color: #ff521c;
-            box-shadow: 0 4px 16px #ff521c12;
-            color: #2675c7;
+            border-color: #FF5722;
+            box-shadow: 0 6px 20px rgba(255,87,34,0.15);
+            color: #FF5722;
         }
         .shop-category.active .material-symbols-outlined,
-        .shop-category:hover .material-symbols-outlined { color: #ff521c; }
+        .shop-category:hover .material-symbols-outlined { color: #FF5722; }
         .shop-category.active .shop-cat-icon,
-        .shop-category:hover .shop-cat-icon { color: #ff521c; }
+        .shop-category:hover .shop-cat-icon { color: #FF5722; }
         .shop-toolbar {
             display: flex;
             gap: 14px;
@@ -180,23 +178,25 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             align-items: center;
             gap: 10px;
             background: #fff;
-            border: 1px solid #dfe8f3;
+            border: 1px solid #E2E8F0;
             border-radius: 24px;
-            padding: 13px 17px;
+            padding: 12px 18px;
             max-width: 600px;
             position: relative;
+            box-shadow: 0 2px 8px rgba(8,15,23,0.02);
         }
-        .shop-search .material-symbols-outlined { color: #8295ad; font-size: 20px; }
+        .shop-search .material-symbols-outlined { color: #64748B; font-size: 20px; }
         .shop-search input {
             border: 0;
             outline: 0;
             width: 100%;
             font-size: 13px;
-            color: #10243a;
+            color: #14264A;
             background: transparent;
             font-family: inherit;
         }
-        .shop-search input::placeholder { color: #8295ad; }
+        .shop-search input::placeholder { color: #64748B; }
+        .shop-search input:focus::placeholder { color: transparent; }
         .shop-search .shop-clear {
             position: absolute;
             right: 8px;
@@ -208,11 +208,11 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: #f1f5f9;
-            color: #64748b;
+            background: #F1F5F9;
+            color: #64748B;
             text-decoration: none;
         }
-        .shop-search .shop-clear:hover { background: #fee2e2; color: #dc2626; }
+        .shop-search .shop-clear:hover { background: #FEE2E2; color: #DC2626; }
         .shop-search .shop-clear .material-symbols-outlined { font-size: 15px; color: inherit; }
         .shop-sort {
             margin-left: auto;
@@ -220,57 +220,66 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             align-items: center;
             gap: 10px;
             font-size: 12px;
-            color: #10243a;
+            color: #14264A;
+            font-weight: 600;
         }
         .shop-sort select {
-            border: 1px solid #79a8ec;
+            border: 1px solid #E2E8F0;
             background: #fff;
             border-radius: 22px;
-            padding: 12px 16px;
-            color: #2675c7;
+            padding: 10px 16px;
+            color: #14264A;
             cursor: pointer;
             font: inherit;
             font-size: 12px;
+            font-weight: 600;
+        }
+        .shop-sort select:focus {
+            outline: none;
+            border-color: #FF5722;
         }
         .shop-apply {
-            border: 1px solid #79a8ec;
-            background: #fff;
+            border: 1px solid #FF5722;
+            background: #FF5722;
             border-radius: 22px;
-            padding: 10px 14px;
-            color: #2675c7;
+            padding: 10px 16px;
+            color: #fff;
             cursor: pointer;
             font: inherit;
             font-size: 12px;
+            font-weight: 700;
         }
         .shop-count {
-            color: #7386a0;
+            color: #64748B;
             font-size: 12px;
             white-space: nowrap;
+            font-weight: 500;
         }
         .shop-products {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
+            gap: 18px;
         }
         .shop-card {
             background: #fff;
-            border: 1px solid #e6edf5;
-            border-radius: 12px;
-            padding: 9px;
-            box-shadow: 0 6px 20px #193a5608;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 6px 20px rgba(8,15,23,0.04);
             min-width: 0;
             display: flex;
             flex-direction: column;
-            transition: box-shadow .3s ease, transform .3s ease;
+            transition: box-shadow .3s ease, transform .3s ease, border-color .3s ease;
         }
         .shop-card:hover {
-            box-shadow: 0 12px 34px #193a5614;
+            box-shadow: 0 12px 30px rgba(8,15,23,0.08);
             transform: translateY(-3px);
+            border-color: rgba(255,87,34,0.3);
         }
         .shop-photo {
             height: 190px;
-            border-radius: 7px;
-            background: #edf2f6;
+            border-radius: 12px;
+            background: #F4F6F8;
             position: relative;
             overflow: hidden;
         }
@@ -287,34 +296,34 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             position: absolute;
             top: 9px;
             left: 9px;
-            background: #f1fff8;
-            border: 1px solid #c8edda;
-            color: #14623f;
+            background: rgba(8,127,91,0.1);
+            border: 1px solid rgba(8,127,91,0.3);
+            color: #087F5B;
             border-radius: 20px;
-            padding: 5px 9px;
+            padding: 4px 10px;
             font-size: 9px;
             font-weight: 800;
             letter-spacing: .03em;
-            box-shadow: 0 2px 8px #0001;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             z-index: 2;
         }
         .shop-stock::before {
             content: '';
             display: inline-block;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: #18b56a;
+            background: #087F5B;
             margin-right: 5px;
         }
-        .shop-stock.low { background: #fffbeb; border-color: #fde68a; color: #b45309; }
-        .shop-stock.low::before { background: #f59e0b; }
-        .shop-stock.out { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
-        .shop-stock.out::before { background: #ef4444; }
+        .shop-stock.low { background: #FEF3C7; border-color: #FDE68A; color: #B45309; }
+        .shop-stock.low::before { background: #F59E0B; }
+        .shop-stock.out { background: #FEE2E2; border-color: #FECACA; color: #B91C1C; }
+        .shop-stock.out::before { background: #EF4444; }
         .shop-out-overlay {
             position: absolute;
             inset: 0;
-            background: #ffffffb8;
+            background: rgba(255,255,255,0.85);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -322,7 +331,7 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             pointer-events: none;
         }
         .shop-out-overlay span {
-            background: #1f2937;
+            background: #080F17;
             color: #fff;
             font-size: 10px;
             font-weight: 800;
@@ -332,74 +341,80 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             letter-spacing: .1em;
         }
         .shop-info {
-            padding: 11px 8px 6px;
+            padding: 12px 4px 4px;
             display: flex;
             flex-direction: column;
             flex: 1;
         }
         .shop-info h3 {
             font-size: 14px;
-            margin: 0 0 5px;
-            color: #10243a;
+            font-weight: 700;
+            margin: 0 0 4px;
+            color: #14264A;
             line-height: 1.35;
             transition: color .2s ease;
         }
         .shop-name-link { text-decoration: none; }
-        .shop-name-link:hover h3 { color: #ff521c; }
-        .shop-categoryname { color: #8295ad; font-size: 11px; }
+        .shop-name-link:hover h3 { color: #FF5722; }
+        .shop-categoryname { color: #64748B; font-size: 11px; font-weight: 500; }
         .shop-price-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-top: auto;
-            padding-top: 13px;
+            padding-top: 14px;
             gap: 5px;
         }
-        .shop-price { font-size: 17px; font-weight: 800; color: #ff521c; }
+        .shop-price { font-size: 17px; font-weight: 800; color: #FF5722; }
         .shop-stocktag {
             font-size: 10px;
-            color: #137247;
-            background: #e0f8eb;
-            padding: 6px 9px;
+            color: #087F5B;
+            background: rgba(8,127,91,0.1);
+            padding: 5px 9px;
             border-radius: 8px;
             white-space: nowrap;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .shop-stocktag.low { color: #b45309; background: #fef3c7; }
-        .shop-stocktag.out { color: #b91c1c; background: #fee2e2; }
+        .shop-stocktag.low { color: #B45309; background: #FEF3C7; }
+        .shop-stocktag.out { color: #B91C1C; background: #FEE2E2; }
         .shop-buy {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
             border: 0;
-            border-radius: 8px;
-            background: #ff521c;
+            border-radius: 12px;
+            background: #FF5722;
             color: #fff;
             padding: 10px;
             font-weight: 700;
             cursor: pointer;
             font-family: inherit;
-            font-size: 13px;
-            transition: background .2s ease;
+            font-size: 12px;
+            transition: all .2s ease;
+            box-shadow: 0 4px 12px rgba(255,87,34,0.2);
+            text-decoration: none;
         }
-        .shop-buy:hover { background: #ed4817; }
-        .shop-buy.is-disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+        .shop-buy:hover:not(.is-disabled) {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+        .shop-buy.is-disabled { background: #E2E8F0; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
         .shop-buy .material-symbols-outlined { font-size: 17px; }
         .shop-empty {
             grid-column: 1 / -1;
             padding: 70px 20px;
             text-align: center;
-            background: #ffffffb8;
-            border: 1px solid #dfe8f3;
-            border-radius: 14px;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
         }
         .shop-empty .material-symbols-outlined { font-size: 44px; color: #94a3b8; }
-        .shop-empty h3 { font-size: 20px; margin: 12px 0 6px; color: #10243a; }
+        .shop-empty h3 { font-size: 20px; font-weight: 700; margin: 12px 0 6px; color: #14264A; }
         .shop-empty p {
-            color: #64748b;
+            color: #64748B;
             font-size: 13px;
             margin: 0 auto 20px;
             max-width: 460px;
@@ -409,15 +424,16 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: #ff521c;
+            background: #FF5722;
             color: #fff;
-            padding: 11px 18px;
-            border-radius: 8px;
+            padding: 11px 20px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 13px;
             text-decoration: none;
+            box-shadow: 0 4px 12px rgba(255,87,34,0.25);
         }
-        .shop-empty a:hover { background: #ed4817; }
+        .shop-empty a:hover { filter: brightness(1.1); }
         @media (max-width: 900px) {
             .shop-products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .shop-categories { grid-template-columns: repeat(3, 1fr); }
@@ -448,7 +464,7 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
 
 <main class="shop-page">
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="shop-hero">
         <div>
             <div class="shop-eyebrow">HI-POWER SHOP</div>
@@ -457,7 +473,7 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
         </div>
     </section>
 
-    <!-- Categories -->
+    <!-- Categories Section -->
     <div class="shop-sectionhead" id="shop">
         <div class="shop-eyebrow">Browse by Category</div>
         <h2>Shop Categories</h2>
@@ -481,7 +497,7 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
         <?php endforeach; ?>
     </nav>
 
-    <!-- Search + Sort -->
+    <!-- Toolbar: Search & Sort -->
     <div class="shop-toolbar">
         <form method="GET" action="ecommerce" class="shop-search" role="search">
             <?php if (!empty($category_filter)): ?>
@@ -518,7 +534,7 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
         </form>
     </div>
 
-    <!-- Products -->
+    <!-- Products Grid -->
     <section class="shop-products" aria-label="Products">
         <?php if (count($products) > 0): ?>
             <?php foreach ($products as $product):
@@ -557,13 +573,13 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
                         <span class="shop-price">&#8369;<?php echo number_format($product['price'], 2); ?></span>
                         <span class="shop-stocktag <?php echo $stock_class; ?>"><?php echo $stock_label; ?></span>
                     </div>
-                    <button type="button"
-                            onclick="event.preventDefault();quickAdd(<?php echo (int)$product['product_id']; ?>,this)"
-                            <?php echo $is_out ? 'disabled' : ''; ?>
-                            class="shop-buy <?php echo $is_out ? 'is-disabled' : ''; ?>">
-                        <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span>
-                        <?php echo $is_out ? 'Out of Stock' : 'Add to Cart'; ?>
-                    </button>
+                    <!-- Select Options button directing to product details for variants selection -->
+                    <a href="products/product?id=<?php echo (int)$product['product_id']; ?>"
+                       class="shop-buy <?php echo $is_out ? 'is-disabled' : ''; ?>"
+                       <?php echo $is_out ? 'onclick="return false;"' : ''; ?>>
+                        <span class="material-symbols-outlined" aria-hidden="true"><?php echo $is_out ? 'block' : 'visibility'; ?></span>
+                        <?php echo $is_out ? 'Out of Stock' : 'Select Options'; ?>
+                    </a>
                 </div>
             </article>
             <?php endforeach; ?>
@@ -586,48 +602,8 @@ $cat_icons = ['Rackets'=>'sports_tennis','Shuttlecocks'=>'sports_baseball','Shoe
     </section>
 </main>
 
-<!-- Mini Cart Toast -->
-<div id="cartToast" class="fixed bottom-28 md:bottom-8 right-4 md:right-8 z-[100] bg-white rounded-2xl border border-outline-variant/20 shadow-2xl p-4 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" style="pointer-events:auto;">
-    <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-green-600 text-lg">check_circle</span>
-    </div>
-    <div>
-        <p class="text-sm font-bold text-on-surface">Added to cart!</p>
-        <a href="cart" class="text-[11px] text-primary font-bold hover:underline">View Cart &rarr;</a>
-    </div>
-</div>
-
 <?php include __DIR__ . '/includes/footer.php'; ?>
 <?php include __DIR__ . '/includes/mobile_nav.php'; ?>
-
-<script>
-function quickAdd(productId, btn) {
-    if (btn.disabled) return;
-    const origHTML = btn.innerHTML;
-    btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span>';
-    btn.disabled = true;
-
-    fetch('ecommerce', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: 'action=quick_add&product_id=' + productId + '&quantity=1&csrf_token=<?php echo urlencode($_SESSION['csrf_token']); ?>'
-    }).then(r => r.json()).then(d => {
-        btn.innerHTML = origHTML;
-        btn.disabled = false;
-        if (d.ok) {
-            const toast = document.getElementById('cartToast');
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); toast.classList.remove('translate-y-0', 'opacity-100'); }, 3000);
-        } else if (d.error === 'login_required') {
-            window.location.href = '/authentication/login';
-        }
-    }).catch(() => {
-        btn.innerHTML = origHTML;
-        btn.disabled = false;
-    });
-}
-</script>
 
 </body>
 </html>

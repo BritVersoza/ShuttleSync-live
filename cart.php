@@ -110,83 +110,85 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>My Cart | HI-POWER</title>
+    <title>My Cart | HI-POWER[cite: 1]</title>
     <?php include __DIR__ . '/includes/tailwind_config.php'; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* ===== My Cart (ShuttleSync UI / mockup) ===== */
-        body, h1, h2, h3, h4, h5, h6 { font-family: "Manrope", sans-serif; }
-        .hp-cart{--text:#142747;--muted:#8194b3;--blue:#435bff;--blue-light:#b4baff;--orange:#ff5722;--page:#f3f5f8;--border:#dce4ef;--white:#fff;--shadow:0 10px 25px rgba(20,39,71,.06);background:var(--page);color:var(--text);font-family:"Manrope",sans-serif;font-size:14px}
+        /* ===== My Cart (Hi-Power Court Theme) ===== */
+        body, h1, h2, h3, h4, h5, h6 { font-family: "Poppins", sans-serif !important; }
+        .hp-cart{--text:#14264A;--muted:#64748B;--orange:#FF5722;--page:#F4F6F8;--border:#E2E8F0;--white:#FFF;--shadow:0 10px 25px rgba(8,15,23,.06);background:var(--page);color:var(--text);font-family:"Poppins",sans-serif;font-size:14px}
         .hp-cart *{box-sizing:border-box}
         .hp-cart button,.hp-cart input{font:inherit}
         .hp-cart button{cursor:pointer}
         .hp-cart .container{width:min(980px,calc(100% - 40px));margin:32px auto 60px}
         .hp-cart .page-heading{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-        .hp-cart .heading-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;color:var(--orange);background:#ffebe5;font-size:23px}
+        .hp-cart .heading-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;color:var(--orange);background:rgba(255,87,34,0.15);font-size:23px}
         .hp-cart h1{font-size:28px;line-height:1.2;margin:0 0 2px;letter-spacing:-1px;font-weight:700;color:var(--text)}
-        .hp-cart .subtitle{margin:0;color:#6f83a5;font-size:11px}
+        .hp-cart .subtitle{margin:0;color:var(--muted);font-size:11px}
         .hp-cart .hp-flash{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:11px 13px;border-radius:11px;font-size:12px;font-weight:600;border:1px solid}
-        .hp-cart .hp-flash.ok{background:#eaf8ef;color:#267446;border-color:#bfe9d1}
-        .hp-cart .hp-flash.bad{background:#fff0eb;color:#b93c1d;border-color:#ffd3c4}
-        .hp-cart .card{background:var(--white);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow)}
+        .hp-cart .hp-flash.ok{background:rgba(8,127,91,0.1);color:#087F5B;border-color:rgba(8,127,91,0.3)}
+        .hp-cart .hp-flash.bad{background:#FFF0EB;color:#B93C1D;border-color:#FFD3C4}
+        .hp-cart .card{background:var(--white);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
         .hp-cart .layout{display:grid;grid-template-columns:minmax(0,640px) minmax(270px,300px);gap:20px;align-items:start}
-        .hp-cart .tabs{display:inline-flex;background:var(--white);border:1px solid var(--border);padding:3px;border-radius:10px;margin-bottom:34px;box-shadow:0 4px 12px rgba(20,39,71,.025)}
-        .hp-cart .tab{border:0;background:transparent;color:var(--text);padding:10px 16px;border-radius:7px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px}
-        .hp-cart .tab.active{color:#fff;background:var(--blue);box-shadow:0 4px 9px rgba(67,91,255,.22)}
-        .hp-cart .count{min-width:15px;height:17px;padding:0 4px;display:inline-grid;place-items:center;border-radius:5px;background:rgba(125,145,170,.15);font-size:9px}
-        .hp-cart .tab.active .count{background:rgba(255,255,255,.2)}
-        .hp-cart .section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;color:#8498b8;font-size:11px;letter-spacing:1px;font-weight:600;text-transform:uppercase}
-        .hp-cart .select-all{border:0;background:none;color:var(--orange);font-size:10px;padding:4px 0}
-        .hp-cart .product-card{display:grid;grid-template-columns:20px 76px minmax(120px,1fr) auto;gap:12px;align-items:center;padding:15px 13px;margin:0 0 10px;cursor:pointer;transition:border-color .2s,background .2s}
-        .hp-cart .product-card:hover{border-color:rgba(255,77,28,.35)}
-        .hp-cart .product-card.selected{border-color:rgba(255,77,28,.5);background:rgba(255,77,28,.03)}
-        .hp-cart .check{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;margin:0}
-        .hp-cart .product-image{width:76px;height:76px;background:#f1f6fb;border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#90a4bf;font-size:38px}
+        .hp-cart .tabs{display:inline-flex;background:var(--white);border:1px solid var(--border);padding:4px;border-radius:14px;margin-bottom:34px;box-shadow:0 4px 12px rgba(8,15,23,.03)}
+        .hp-cart .tab{border:0;background:transparent;color:var(--text);padding:10px 18px;border-radius:10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all .2s}
+        .hp-cart .tab.active{color:#fff;background:var(--orange);box-shadow:0 4px 12px rgba(255,87,34,.25)}
+        .hp-cart .count{min-width:18px;height:18px;padding:0 5px;display:inline-grid;place-items:center;border-radius:6px;background:rgba(100,116,139,.15);font-size:9px}
+        .hp-cart .tab.active .count{background:rgba(255,255,255,.25);color:#fff}
+        .hp-cart .section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;color:var(--muted);font-size:11px;letter-spacing:1px;font-weight:700;text-transform:uppercase}
+        .hp-cart .select-all{border:0;background:none;color:var(--orange);font-size:10px;padding:4px 0;font-weight:600}
+        .hp-cart .product-card{display:grid;grid-template-columns:20px 76px minmax(120px,1fr) auto;gap:12px;align-items:center;padding:16px;margin:0 0 12px;cursor:pointer;transition:border-color .2s,background .2s}
+        .hp-cart .product-card:hover{border-color:rgba(255,87,34,.4)}
+        .hp-cart .product-card.selected{border-color:rgba(255,87,34,.6);background:rgba(255,87,34,.02)}
+        .hp-cart .check{width:16px;height:16px;accent-color:var(--orange);cursor:pointer;margin:0}
+        .hp-cart .product-image{width:76px;height:76px;background:#F4F6F8;border-radius:12px;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:38px}
         .hp-cart .product-image img{width:100%;height:100%;object-fit:contain}
-        .hp-cart .product-name{font-size:13px;font-weight:600;margin:0 0 2px;color:var(--text)}
-        .hp-cart .product-category{margin:0;color:var(--muted);font-size:10px}
-        .hp-cart .tag{display:inline-block;margin-top:6px;font-size:9px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;color:var(--orange);background:#ffebe5;border-radius:5px;padding:3px 7px}
-        .hp-cart .quantity-row{display:flex;align-items:center;gap:10px;margin-top:17px;color:#7c91b2;font-size:10px}
-        .hp-cart .qty-controls{display:flex;align-items:center;border-radius:8px;overflow:hidden;background:#f0f3f7}
-        .hp-cart .qty-controls button{width:29px;height:28px;border:0;background:#e9eef5;color:#516989;font-size:16px;font-weight:600;line-height:1}
-        .hp-cart .qty-value{width:34px;text-align:center;color:var(--text);font-weight:600;font-size:11px}
+        .hp-cart .product-name{font-size:13px;font-weight:700;margin:0 0 2px;color:var(--text)}
+        .hp-cart .product-category{margin:0;color:var(--muted);font-size:10px;font-weight:500}
+        .hp-cart .tag{display:inline-block;margin-top:6px;font-size:9px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;color:var(--orange);background:rgba(255,87,34,0.1);border:1px solid rgba(255,87,34,0.25);border-radius:8px;padding:4px 8px}
+        .hp-cart .quantity-row{display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--muted);font-size:10px;font-weight:600}
+        .hp-cart .qty-controls{display:flex;align-items:center;border-radius:10px;overflow:hidden;background:#F4F6F8;border:1px solid var(--border)}
+        .hp-cart .qty-controls button{width:29px;height:28px;border:0;background:#E2E8F0;color:var(--text);font-size:16px;font-weight:600;line-height:1}
+        .hp-cart .qty-value{width:34px;text-align:center;color:var(--text);font-weight:700;font-size:11px}
         .hp-cart .price-col{text-align:right;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;align-self:stretch}
         .hp-cart .price{color:var(--orange);font-size:15px;font-weight:700;white-space:nowrap}
         .hp-cart .each-price{color:var(--muted);font-size:9px;white-space:nowrap}
-        .hp-cart .remove{color:var(--orange);background:none;border:0;font-size:10px;padding:0;font-weight:500}
-        .hp-cart .subtotal-card{display:flex;justify-content:space-between;align-items:center;padding:14px 13px;margin-top:10px}
-        .hp-cart .subtotal-title{margin:0 0 2px;font-size:12px;font-weight:600}
+        .hp-cart .remove{color:var(--orange);background:none;border:0;font-size:10px;padding:0;font-weight:600;display:flex;align-items:center;gap:2px}
+        .hp-cart .subtotal-card{display:flex;justify-content:space-between;align-items:center;padding:16px;margin-top:10px}
+        .hp-cart .subtotal-title{margin:0 0 2px;font-size:12px;font-weight:700;color:var(--text)}
         .hp-cart .subtotal-note{margin:0;color:var(--muted);font-size:9px}
         .hp-cart .subtotal-amount{color:var(--orange);font-size:16px;font-weight:700}
-        .hp-cart .checkout{padding:18px;position:sticky;top:84px}
-        .hp-cart .checkout-heading{display:flex;align-items:center;gap:9px;margin:0 0 20px;font-size:15px;font-weight:600;color:var(--text)}
+        .hp-cart .checkout{padding:20px;position:sticky;top:84px;background:#080F17;border-color:#14264A;color:#fff}
+        .hp-cart .checkout-heading{display:flex;align-items:center;gap:9px;margin:0 0 20px;font-size:15px;font-weight:700;color:#fff}
         .hp-cart .checkout-icon{color:var(--orange);font-size:19px}
-        .hp-cart .summary-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:11px 0;color:#7185a5;font-size:11px}
-        .hp-cart .summary-row strong{color:var(--text);font-weight:600}
-        .hp-cart .divider{border:0;border-top:1px solid #edf0f5;margin:14px 0}
-        .hp-cart .combined{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;font-size:12px;font-weight:600;color:var(--text)}
+        .hp-cart .summary-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0;color:#94A3B8;font-size:11px}
+        .hp-cart .summary-row strong{color:#fff;font-weight:700}
+        .hp-cart .divider{border:0;border-top:1px solid #14264A;margin:16px 0}
+        .hp-cart .combined{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;font-size:12px;font-weight:700;color:#fff}
         .hp-cart .combined strong{color:var(--orange);font-size:19px}
-        .hp-cart .checkout-note{color:#8799b6;font-size:9px;line-height:1.7;margin:0 0 14px}
-        .hp-cart .checkout-btn{width:100%;border-radius:9px;min-height:39px;padding:9px 10px;font-size:10px;font-weight:600;display:flex;justify-content:center;align-items:center;gap:8px;transition:transform .15s,opacity .15s}
-        .hp-cart .checkout-btn:hover:not(:disabled){transform:translateY(-1px)}
-        .hp-cart .checkout-btn:disabled{cursor:not-allowed;opacity:.48}
-        .hp-cart .primary{background:var(--blue);border:1px solid var(--blue);color:#fff;box-shadow:0 4px 9px rgba(67,91,255,.16)}
-        .hp-cart .outline{background:var(--white);color:var(--blue);border:1px solid #8794ff;margin-top:9px}
-        .hp-cart .combine-divider{display:flex;align-items:center;gap:9px;margin:13px 0 10px;color:#8b9bb5;font-size:8px;font-weight:500;white-space:nowrap}
-        .hp-cart .combine-divider::before,.hp-cart .combine-divider::after{content:"";height:1px;background:#e3e8f0;flex:1}
-        .hp-cart .dark-btn{background:#9da1aa;color:#fff;border:1px solid #9da1aa}
-        .hp-cart .checkout-foot{text-align:center;margin:10px 0 0;color:#8a9bb6;font-size:8px;line-height:1.6}
+        .hp-cart .checkout-note{color:#94A3B8;font-size:9px;line-height:1.7;margin:0 0 16px}
+        .hp-cart .checkout-btn{width:100%;border-radius:12px;min-height:42px;padding:10px 12px;font-size:11px;font-weight:700;display:flex;justify-content:center;align-items:center;gap:8px;transition:all .2s}
+        .hp-cart .checkout-btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.1)}
+        .hp-cart .checkout-btn:disabled{cursor:not-allowed;opacity:.4}
+        .hp-cart .primary{background:var(--orange);border:1px solid var(--orange);color:#fff;box-shadow:0 4px 12px rgba(255,87,34,.3)}
+        .hp-cart .outline{background:transparent;color:#fff;border:1px solid #14264A;margin-top:10px}
+        .hp-cart .outline:hover:not(:disabled){background:#14264A;border-color:var(--orange)}
+        .hp-cart .combine-divider{display:flex;align-items:center;gap:9px;margin:14px 0 10px;color:#64748B;font-size:8px;font-weight:700;white-space:nowrap}
+        .hp-cart .combine-divider::before,.hp-cart .combine-divider::after{content:"";height:1px;background:#14264A;flex:1}
+        .hp-cart .dark-btn{background:#14264A;color:#fff;border:1px solid #14264A}
+        .hp-cart .dark-btn:hover:not(:disabled){background:var(--orange);border-color:var(--orange)}
+        .hp-cart .checkout-foot{text-align:center;margin:12px 0 0;color:#64748B;font-size:8px;line-height:1.6}
         .hp-cart .empty{padding:30px 18px;text-align:center;color:var(--muted);font-size:12px}
         .hp-cart .empty strong{display:block;color:var(--text);font-size:15px;margin-bottom:6px}
         .hp-cart .empty a{color:var(--orange);font-weight:700;text-decoration:none}
         .hp-cart .empty-lg{padding:52px 20px}
-        .hp-cart .empty-lg .empty-icon{font-size:40px;color:#c3cfdd;margin-bottom:10px}
+        .hp-cart .empty-lg .empty-icon{font-size:40px;color:var(--muted);margin-bottom:10px}
         .hp-cart .empty-lg .empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
-        .hp-cart .empty-lg .empty-actions a{border-radius:9px;padding:11px 18px;font-size:12px;font-weight:700;text-decoration:none}
+        .hp-cart .empty-lg .empty-actions a{border-radius:12px;padding:12px 20px;font-size:12px;font-weight:700;text-decoration:none}
         .hp-cart .empty-lg .empty-actions .solid{background:var(--orange);color:#fff}
-        .hp-cart .empty-lg .empty-actions .ghost{border:1px solid var(--border);color:#5b6f8f;background:#fff}
+        .hp-cart .empty-lg .empty-actions .ghost{border:1px solid var(--border);color:var(--text);background:#fff}
         @media (max-width:820px){
             .hp-cart .container{width:calc(100% - 32px);margin:22px auto 44px}
             .hp-cart .layout{grid-template-columns:1fr;gap:16px}
@@ -207,7 +209,7 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col pb-20 md:pb-0">
+<body class="bg-[#F4F6F8] font-poppins text-[#14264A] min-h-screen flex flex-col pb-20 md:pb-0">
 
 <form id="actionForm" method="POST" action="cart" style="display: none;">
     <input type="hidden" name="action" id="actionName">
@@ -281,9 +283,23 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
                             </div>
                         <?php else: ?>
                             <?php foreach ($cart_items as $item):
-                                $images = json_decode($item['image_url'], true);
-                                $img = (is_array($images) && count($images) > 0) ? $images[0] : ($item['image_url'] ?? '');
-                                $img_url = (!empty($img) && file_exists($img)) ? htmlspecialchars($img) : "https://picsum.photos/seed/prod_" . $item['product_id'] . "/300/300";
+                                // 1. Check if there is a specific variant image saved in the customization string
+                                $custom = $item['customization'] ?? '';
+                                $variant_img = '';
+                                
+                                if (!empty($custom) && preg_match('/IMAGE:\s*([^|]+)/i', $custom, $img_match)) {
+                                    $variant_img = trim($img_match[1]);
+                                }
+
+                                // 2. Use variant image if available, otherwise fallback to the default product image
+                                if (!empty($variant_img)) {
+                                    $img_url = htmlspecialchars($variant_img);
+                                } else {
+                                    $images = json_decode($item['image_url'], true);
+                                    $img = (is_array($images) && count($images) > 0) ? $images[0] : ($item['image_url'] ?? '');
+                                    $img_url = (!empty($img) && file_exists($img)) ? htmlspecialchars($img) : "https://picsum.photos/seed/prod_" . $item['product_id'] . "/300/300";
+                                }
+
                                 $line_total = $item['price'] * $item['quantity'];
                             ?>
                             <article class="card product-card item-card cart-item-row" data-type="shop" data-cart-id="<?php echo $item['cart_item_id']; ?>" data-amount="<?php echo number_format($line_total, 2, '.', ''); ?>" data-stock="<?php echo (int)$item['stock_quantity']; ?>">
@@ -294,8 +310,15 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
                                 <div class="product-info">
                                     <p class="product-name"><?php echo htmlspecialchars($item['name']); ?></p>
                                     <p class="product-category"><?php echo htmlspecialchars($item['category']); ?></p>
-                                    <?php if (!empty($item['customization'])): ?>
-                                        <span class="tag"><?php echo htmlspecialchars($item['customization']); ?></span>
+                                    <?php if (!empty($item['customization'])): 
+                                        $custom = $item['customization'];
+                                        if (preg_match('/VARIANT:\s*([^|]+)/i', $custom, $matches)) {
+                                            $display_tag = trim($matches[1]);
+                                        } else {
+                                            $display_tag = $custom;
+                                        }
+                                    ?>
+                                        <span class="tag"><?php echo htmlspecialchars($display_tag); ?></span>
                                     <?php endif; ?>
                                     <div class="quantity-row">
                                         <span>QTY</span>
@@ -377,7 +400,7 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
                     </section>
                 </div>
 
-                <!-- ============ RIGHT: CHECKOUT ============ -->
+                <!-- ============ RIGHT: CHECKOUT (Hi-Power Dark Surface) ============ -->
                 <aside class="card checkout" aria-label="Checkout summary">
                     <h2 class="checkout-heading"><span class="checkout-icon material-symbols-outlined text-[18px]" aria-hidden="true">shopping_cart</span> Checkout</h2>
 
@@ -405,8 +428,8 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
                 <strong>Your cart is empty</strong>
                 Add court reservations or gear to get started with your order.
                 <div class="empty-actions">
-                    <a href="ecommerce" class="solid"><span class="material-symbols-outlined text-[14px]">shopping_bag</span> Shop Gear>
-                    <a href="courtbooking" class="ghost"><span class="material-symbols-outlined text-[14px]">calendar_month</span> Book Court>
+                    <a href="ecommerce" class="solid"><span class="material-symbols-outlined text-[14px]">shopping_bag</span> Shop Gear</a>
+                    <a href="courtbooking" class="ghost"><span class="material-symbols-outlined text-[14px]">calendar_month</span> Book Court</a>
                 </div>
             </div>
         <?php endif; ?>
@@ -494,7 +517,7 @@ $is_cart_empty = (empty($cart_items) && empty($cart_bookings));
             ? (shopIds.size === document.querySelectorAll('.shop-check').length && shopIds.size > 0)
             : (bookingIds.size === document.querySelectorAll('.booking-check').length && bookingIds.size > 0);
         const state = !allChecked;
-        (type === 'shop' ? document.querySelectorAll('.shop-check') : document.querySelectorAll('.booking-check'))
+        (type === 'shop' ? document.querySelectorAll('.shop-check' ) : document.querySelectorAll('.booking-check'))
             .forEach(cb => { cb.checked = state; });
         refreshTotals();
     }
