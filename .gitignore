@@ -1,0 +1,36 @@
+# Environment file - NEVER commit this!
+.env
+
+# Composer
+/vendor/
+composer.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# phpMyAdmin
+phpmyadmin/
+ai/venv/
+*.zip
+uploads/
+ai/venv/
+*.zip
+uploads/
+.env*
+.env*
+ai/venv/
+*.zip
+uploads/
+authentication/login.php
+authentication/register.php
+.env*
